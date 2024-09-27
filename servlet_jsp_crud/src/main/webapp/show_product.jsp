@@ -43,7 +43,7 @@
                     <td>${product.price}</td>
                     <td>${product.description}</td>
                     <td>
-                <form action="addProduct" method="POST" style="display:inline;">
+                <form action="addProduct" method="GET" style="display:inline;">
                     <input type="hidden" name="id" value="${product.id}" />
                     <input type="submit" value="Update" />
                 </form>

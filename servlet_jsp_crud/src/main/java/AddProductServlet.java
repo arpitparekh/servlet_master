@@ -50,10 +50,6 @@ public class AddProductServlet extends HttpServlet {
             double price = Double.parseDouble(priceStr);  // Convert price to double
             
             connectivity.insertProduct(productName, price, description);
-
-            List<Product> productList = connectivity.getAllProduct();
-            request.setAttribute("productList", productList);
-            System.out.println(productList);
             
             RequestDispatcher dispatcher = request.getRequestDispatcher("add_product.jsp");
             dispatcher.forward(request, response);

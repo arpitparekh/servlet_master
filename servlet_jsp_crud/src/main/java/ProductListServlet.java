@@ -33,29 +33,21 @@ public class ProductListServlet extends HttpServlet{
         request.setAttribute("productList", productList);
         request.getRequestDispatcher("show_product.jsp").forward(request, resp);
         
+        
+        
 	}
 	
 	@Override
 	protected void doPost(HttpServletRequest request, HttpServletResponse resp) throws ServletException, IOException {
 		
-		String endPoint = request.getServletPath();
+			String endPoint = request.getServletPath();
         
-        if(endPoint.equals("/updateProduct")) {
-        	
-        	int id = Integer.parseInt(request.getParameter("id"));        	
-        	
-        	request.setAttribute("id", id);
-        	request.getRequestDispatcher("add_product.jsp").forward(request, resp);
-        	
-        	
-        }else {
+      
         	int id = Integer.parseInt(request.getParameter("id"));
     		connectivity.deleteProduct(id);
     		
     		resp.sendRedirect("showProduct");
-        }
-		
-		
+
 		
 	}
 	
