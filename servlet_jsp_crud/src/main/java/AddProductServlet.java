@@ -1,13 +1,10 @@
+import java.io.IOException;
+import java.sql.SQLException;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import jakarta.servlet.RequestDispatcher;
-
-import java.io.IOException;
-import java.sql.SQLException;
-import java.util.List;
 
 @WebServlet("/addProduct")
 public class AddProductServlet extends HttpServlet {
@@ -24,47 +21,71 @@ public class AddProductServlet extends HttpServlet {
             throw new ServletException("Failed to initialize Database Connectivity", e);
         }
     }
-    
+
+    // Handle GET request to pre-fill the form for update
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-    	String id1= (String)req.getAttribute("id");
-    	String id2 = (String)req.getParameter("id");
-    	
-    	System.out.println(id1);
-    	System.out.println(id2);
+        
+    	String idStr = req.getParameter("id");
+        
+        System.out.println(idStr);
+
+        if (idStr != null && !idStr.isEmpty()) {
+            try {
+                int id = Integer.parseInt(idStr);
+                Product product = connectivity.getProductById(id); // Fetch product details by ID
+
+                if (product != null) {
+                    // Set product attributes to pre-populate the form for update
+                    req.setAttribute("product", product);
+                }
+            } catch (NumberFormatException | SQLException e) {
+                resp.sendError(HttpServletResponse.SC_BAD_REQUEST, "Invalid product ID");
+                return;
+            }
+        }
+
+        // Forward to the JSP form (add_product.jsp)
+        req.getRequestDispatcher("add_product.jsp").forward(req, resp);
     }
 
+    // Handle POST request for adding/updating products
     @Override
-    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        String productName = request.getParameter("productName");
-        String priceStr = request.getParameter("price");
-        String description = request.getParameter("description");
+    protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        String productName = req.getParameter("productName");
+        String priceStr = req.getParameter("price");
+        String description = req.getParameter("description");
+        String idStr = req.getParameter("id");
 
-        if (productName == null || priceStr == null || description == null) {
-            response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Invalid input");
+        if (productName == null || priceStr == null || description == null || productName.isEmpty() || priceStr.isEmpty() || description.isEmpty()) {
+            resp.sendError(HttpServletResponse.SC_BAD_REQUEST, "Invalid input");
             return;
         }
 
         try {
-        	
-            double price = Double.parseDouble(priceStr);  // Convert price to double
-            
-            connectivity.insertProduct(productName, price, description);
-            
-            RequestDispatcher dispatcher = request.getRequestDispatcher("add_product.jsp");
-            dispatcher.forward(request, response);
+            double price = Double.parseDouble(priceStr);
+
+            if (idStr == null || idStr.isEmpty()) {
+                // Add new product
+                connectivity.insertProduct(productName, price, description);
+            } else {
+                // Update existing product
+                int id = Integer.parseInt(idStr);
+                connectivity.updateProduct(id, productName, price, description);
+            }
+
+            resp.sendRedirect("showProduct");
 
         } catch (NumberFormatException e) {
-            response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Invalid price format");
+            resp.sendError(HttpServletResponse.SC_BAD_REQUEST, "Invalid price format");
         } catch (Exception e) {
             e.printStackTrace();
-            response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Database error");
+            resp.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Database error");
         }
     }
 
     @Override
     public void destroy() {
-        // Close the database connection when the servlet is destroyed
         try {
             if (connectivity != null) {
                 connectivity.close();

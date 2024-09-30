@@ -1,111 +1,86 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
-<!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Add Product</title>
+    <title>Add or Update Product</title>
     <style>
         body {
             font-family: Arial, sans-serif;
-            background-color: #f9f9f9;
+            background-color: #f8f9fa;
             margin: 0;
-            padding: 0;
-        }
-
-        .container {
-            max-width: 600px;
-            margin: 50px auto;
             padding: 20px;
-            background-color: white;
-            box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
-            border-radius: 8px;
         }
-
-        h1 {
+        h2 {
             text-align: center;
-            color: #333;
-            margin-bottom: 20px;
+            color: #343a40;
         }
-
         form {
-            display: flex;
-            flex-direction: column;
+            max-width: 500px;
+            margin: 0 auto;
+            background-color: #ffffff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
         }
-
         label {
+            display: block;
             margin: 10px 0 5px;
-            font-weight: bold;
-            color: #555;
+            color: #495057;
         }
-
         input[type="text"],
         input[type="number"],
         textarea {
-            padding: 12px;
-            font-size: 1em;
-            border: 1px solid #ccc;
-            border-radius: 6px;
-            margin-bottom: 15px;
-            transition: border-color 0.3s ease;
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ced4da;
+            border-radius: 5px;
+            box-sizing: border-box;
         }
-
-        input[type="text"]:focus,
-        input[type="number"]:focus,
-        textarea:focus {
-            border-color: #2196F3;
-            outline: none;
-        }
-
         input[type="submit"] {
-            padding: 12px;
-            font-size: 1em;
-            background-color: #2196F3;
+            width: 100%;
+            padding: 10px;
+            background-color: #007bff;
             color: white;
             border: none;
-            border-radius: 6px;
+            border-radius: 5px;
+            margin-top : 20px;
             cursor: pointer;
-            transition: background-color 0.3s ease;
+            font-size: 16px;
         }
-
         input[type="submit"]:hover {
-            background-color: #1976D2;
+       		
+            background-color: #0056b3;
         }
-
-        /* Responsive Design */
-        @media (max-width: 600px) {
-            .container {
-                width: 90%;
-                margin: 20px auto;
-            }
-
-            input[type="text"],
-            input[type="number"],
-            textarea {
-                font-size: 0.9em;
-            }
-
-            input[type="submit"] {
-                font-size: 0.9em;
-            }
+        a {
+            display: block;
+            text-align: center;
+            margin-top: 20px;
+            text-decoration: none;
+            color: #007bff;
+        }
+        a:hover {
+            text-decoration: underline;
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <h1>Add Product</h1>
-        <form action="addProduct" method="post">
-            <label for="productName">Product Name:</label>
-            <input type="text" id="productName" name="productName" required>
+    <h2>${product != null ? "Update" : "Add"} Product</h2>
+    
+    <form action="addProduct" method="post">
+        <!-- Hidden field to store product ID for update functionality -->
+        <input type="hidden" name="id" value="${product != null ? product.id : ''}">
 
-            <label for="price">Price:</label>
-            <input type="number" id="price" name="price" step="0.01" required>
+        <label for="productName">Product Name:</label>
+        <input type="text" id="productName" name="productName" value="${product != null ? product.name : ''}" required>
 
-            <label for="description">Product Description:</label>
-            <textarea id="description" name="description" rows="4" required></textarea>
+        <label for="price">Price:</label>
+        <input type="number" step="0.01" id="price" name="price" value="${product != null ? product.price : ''}" required>
 
-            <input type="submit" value="Add Product">
-        </form>
-    </div>
+        <label for="description">Description:</label>
+        <textarea id="description" name="description" rows="4" required>${product != null ? product.description : ''}</textarea>
+
+        <input type="submit" value="${product != null ? "Update" : "Add"} Product">
+    </form>
+    
+    <a href="showProduct">Back to Product List</a>
 </body>
 </html>

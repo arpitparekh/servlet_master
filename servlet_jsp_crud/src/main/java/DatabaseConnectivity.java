@@ -115,6 +115,32 @@ public class DatabaseConnectivity {
     	
     }
     
+    public Product getProductById(int id) throws SQLException {
+        String sql = "SELECT * FROM product WHERE id = ?";
+        
+        try {
+        	
+            PreparedStatement pstmt = connection.prepareStatement(sql);
+            pstmt.setInt(1, id);
+            ResultSet rs = pstmt.executeQuery();
+            
+                if (rs.next()) {
+                    return new Product(
+                        rs.getInt("id"),
+                        rs.getString("name"),
+                        rs.getDouble("price"),
+                        rs.getString("description")
+                    );
+                }
+            
+        }catch(Exception e) {
+        	System.out.println(e.getMessage());
+        	e.printStackTrace();
+        }
+        
+        return null; // Return null if no product found with the given id
+    }
+    
 
     public void close() throws SQLException {
         if (statement != null) statement.close();
